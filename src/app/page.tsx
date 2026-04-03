@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AreaChart, Area, ResponsiveContainer, YAxis, Tooltip } from 'recharts';
 import { 
@@ -196,7 +197,7 @@ export default function BullXchangeLanding() {
             rel="noopener noreferrer"
             className="bg-white/95 px-8 py-4 rounded-xl border border-[#333] shadow-[0_0_30px_rgba(255,255,255,0.05)] hover:shadow-[0_0_30px_rgba(255,255,255,0.1)] transition-all duration-300 group cursor-pointer block"
           >
-            <img 
+<img 
               src="/smart-api-logo.png" 
               alt="Angel One Smart API" 
               className="h-8 md:h-10 object-contain opacity-90 group-hover:opacity-100 transition-opacity duration-300" 
