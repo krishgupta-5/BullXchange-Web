@@ -205,9 +205,9 @@ export default function AdminDashboard() {
         {/* Real Chart */}
         <div className="lg:col-span-2 bg-white p-6 rounded-xl border shadow-sm flex flex-col">
           <h3 className="text-lg font-semibold mb-4 text-gray-800">Trading Volume History</h3>
-          <div className="w-full h-80">
+          <div className="w-full h-80 min-h-[320px]">
             {chartData.length > 0 ? (
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer width="100%" height={320} minWidth={0} aspect={undefined}>
                 <AreaChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                   <defs>
                     <linearGradient id="colorVolume" x1="0" y1="0" x2="0" y2="1">
