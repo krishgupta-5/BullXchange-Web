@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { Settings, Shield, Key, Save, RefreshCw, UserCheck, Network, Cpu, Lock, KeyRound, Zap } from 'lucide-react';
+import { Settings, Shield, Key, Save, RefreshCw, Network, Cpu, Lock, KeyRound, Zap } from 'lucide-react';
 
 interface GlobalConfig {
   maintenanceMode: boolean;
@@ -178,102 +178,65 @@ export default function AdminSettingsPage() {
     }));
   };
 
-  if (loading) return <div className="p-8 text-gray-500 flex items-center"><RefreshCw className="w-5 h-5 animate-spin mr-2"/> Loading settings...</div>;
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="flex flex-col items-center gap-4 text-zinc-500 animate-pulse">
+          <div className="w-8 h-8 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-sm font-mono uppercase tracking-widest">Loading Configuration...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="space-y-6 max-w-5xl">
-      <div className="flex items-center space-x-3">
-        <Settings className="w-6 h-6 text-gray-800" />
-        <h2 className="text-2xl font-bold text-gray-800">Global Settings</h2>
+    <div className="space-y-6 max-w-6xl text-white" style={{ fontFamily: '"DM Sans", sans-serif' }}>
+      
+      <div className="mb-8">
+        <h2 className="text-3xl font-bold tracking-tight text-white mb-1">System Configuration</h2>
+        <p className="text-sm text-zinc-500">Manage global platform state and external API integrations.</p>
       </div>
       
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-1 gap-8">
         
-        {/* System Settings */}
-        <div className="bg-white rounded-xl border shadow-sm p-6 h-fit">
-          <div className="flex items-center space-x-2 mb-6">
-            <Settings className="w-5 h-5 text-gray-800" />
-            <h3 className="text-lg font-semibold text-gray-800">Platform Controls</h3>
+        {/* Angel One API Configuration */}
+        <div className="bg-[#050505] rounded-2xl border border-[#222] shadow-xl p-8 relative overflow-hidden group">
+          <div className="absolute top-0 left-0 w-64 h-64 bg-emerald-500/5 rounded-full blur-[80px] -z-10 group-hover:bg-emerald-500/10 transition-colors duration-700"></div>
+
+          <div className="flex items-center space-x-3 mb-8">
+            <div className="p-2.5 bg-[#111] text-emerald-500 rounded-xl border border-[#333]">
+              <Shield className="w-5 h-5" />
+            </div>
+            <h3 className="text-xl font-bold text-white tracking-tight">Smart API Integration</h3>
           </div>
           
           <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <label className="text-sm font-medium text-gray-900">Maintenance Mode</label>
-                <p className="text-xs text-gray-500 mt-0.5">Locks the app for users showing a maintenance screen.</p>
-              </div>
-              <button
-                onClick={() => handleGlobalToggle('maintenanceMode')}
-                className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors ${
-                  globalConfig.maintenanceMode ? 'bg-red-500' : 'bg-gray-200'
-                }`}
-              >
-                <span className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform ${globalConfig.maintenanceMode ? 'translate-x-7' : 'translate-x-1'}`} />
-              </button>
-            </div>
-
-            <div className="flex items-center justify-between border-t pt-6">
-              <div>
-                <label className="text-sm font-medium text-gray-900">Allow Trading</label>
-                <p className="text-xs text-gray-500 mt-0.5">Enable or disable placing new buy/sell orders.</p>
-              </div>
-              <button
-                onClick={() => handleGlobalToggle('tradingEnabled')}
-                className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors ${
-                  globalConfig.tradingEnabled ? 'bg-green-500' : 'bg-gray-200'
-                }`}
-              >
-                <span className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform ${globalConfig.tradingEnabled ? 'translate-x-7' : 'translate-x-1'}`} />
-              </button>
-            </div>
-
-            <div className="flex items-center justify-between border-t pt-6">
-              <div>
-                <label className="text-sm font-medium text-gray-900">New User Registration</label>
-                <p className="text-xs text-gray-500 mt-0.5">Allow new accounts to sign up on BullXchange.</p>
-              </div>
-              <button
-                onClick={() => handleGlobalToggle('registrationEnabled')}
-                className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors ${
-                  globalConfig.registrationEnabled ? 'bg-blue-500' : 'bg-gray-200'
-                }`}
-              >
-                <span className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform ${globalConfig.registrationEnabled ? 'translate-x-7' : 'translate-x-1'}`} />
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Angel One API Configuration */}
-        <div className="bg-white rounded-xl border shadow-sm p-6">
-          <div className="flex items-center space-x-2 mb-6">
-            <Shield className="w-5 h-5 text-blue-600" />
-            <h3 className="text-lg font-semibold text-gray-800">Angel One Integration</h3>
-          </div>
-          
-          <div className="space-y-4">
             
             {/* Generate Token UI */}
-            <div className="bg-slate-50 p-4 rounded-lg border border-slate-200 mb-6">
-              <h4 className="text-sm font-bold text-gray-800 mb-3 flex items-center">
-                <Zap className="w-4 h-4 text-amber-500 mr-1.5" /> 
+            <div className="bg-[#0a0a0a] p-5 rounded-xl border border-[#333] relative overflow-hidden">
+              {/* Subtle background glow for the token generation box */}
+              <div className="absolute -top-10 -right-10 w-32 h-32 bg-amber-500/10 blur-[40px] pointer-events-none"></div>
+
+              <h4 className="text-[11px] font-mono uppercase tracking-widest text-white mb-4 flex items-center">
+                <Zap className="w-4 h-4 text-amber-500 mr-2" /> 
                 Generate Live Session Token
               </h4>
-              <div className="grid grid-cols-2 gap-3 mb-3">
+              
+              <div className="grid grid-cols-2 gap-4 mb-4">
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">
+                  <label className="block text-[10px] font-mono uppercase tracking-widest text-zinc-500 mb-2">
                     <Lock className="w-3 h-3 inline mr-1" /> Password
                   </label>
                   <input
                     type="password"
                     value={angelPassword}
                     onChange={(e) => setAngelPassword(e.target.value)}
-                    className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500 focus:outline-none"
-                    placeholder="Angel One Password"
+                    className="w-full px-3 py-2 text-sm bg-[#111] border border-[#333] rounded-lg focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 focus:outline-none text-white placeholder-zinc-700 transition-all"
+                    placeholder="Enter Password"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">
+                  <label className="block text-[10px] font-mono uppercase tracking-widest text-zinc-500 mb-2">
                     <KeyRound className="w-3 h-3 inline mr-1" /> TOTP
                   </label>
                   <input
@@ -281,7 +244,7 @@ export default function AdminSettingsPage() {
                     maxLength={6}
                     value={angelTotp}
                     onChange={(e) => setAngelTotp(e.target.value)}
-                    className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500 focus:outline-none tracking-widest font-mono"
+                    className="w-full px-3 py-2 text-sm bg-[#111] border border-[#333] rounded-lg focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 focus:outline-none text-emerald-400 tracking-widest font-mono placeholder-zinc-700 transition-all"
                     placeholder="123456"
                   />
                 </div>
@@ -289,104 +252,104 @@ export default function AdminSettingsPage() {
               <button
                 onClick={handleGenerateToken}
                 disabled={generatingToken || !angelPassword || !angelTotp}
-                className="w-full flex justify-center items-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="w-full flex justify-center items-center py-2.5 px-4 rounded-lg text-sm font-bold text-black bg-white hover:bg-zinc-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors hover:-translate-y-0.5 shadow-[0_0_15px_rgba(255,255,255,0.1)]"
               >
                 {generatingToken ? (
                   <><RefreshCw className="w-4 h-4 mr-2 animate-spin" /> Generating API Token...</>
                 ) : (
-                  'Generate & Save JWT Token'
+                  'Generate & Sync Token'
                 )}
               </button>
             </div>
 
             {/* Current JWT Status */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                <Key className="w-4 h-4 inline mr-1" /> Current Active JWT
+              <label className="block text-[10px] font-mono uppercase tracking-widest text-zinc-500 mb-2">
+                <Key className="w-3 h-3 inline mr-1" /> Current Active JWT
               </label>
               <div className="relative">
                 <input
                   type={showSecret ? "text" : "password"}
                   value={angelConfig.jwtToken}
                   readOnly
-                  className="w-full px-3 py-2 pr-16 border border-gray-200 rounded-lg bg-gray-50 text-gray-500 focus:outline-none font-mono text-xs"
+                  className="w-full px-3 py-2.5 pr-16 border border-[#222] rounded-lg bg-[#0a0a0a] text-emerald-500/70 focus:outline-none font-mono text-[10px] tracking-wider"
                   placeholder="No active token. Generate one above."
                 />
                 <button
                   type="button"
                   onClick={() => setShowSecret(!showSecret)}
-                  className="absolute right-3 top-2 text-xs font-semibold text-gray-500 hover:text-gray-800"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold tracking-widest text-zinc-500 hover:text-white transition-colors"
                 >
                   {showSecret ? 'HIDE' : 'SHOW'}
                 </button>
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 mt-4 pt-4 border-t border-gray-100">
+            <div className="grid grid-cols-2 gap-6 mt-6 pt-6 border-t border-[#222]">
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Client Code</label>
+                <label className="block text-[10px] font-mono uppercase tracking-widest text-zinc-500 mb-2">Client Code</label>
                 <input
                   type="text"
                   value={angelConfig.clientCode}
                   onChange={(e) => setAngelConfig({ ...angelConfig, clientCode: e.target.value })}
-                  className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500 focus:outline-none uppercase"
+                  className="w-full px-3 py-2 text-sm bg-[#0a0a0a] border border-[#333] rounded-lg focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 focus:outline-none text-white uppercase font-mono transition-all"
                 />
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Private Key</label>
+                <label className="block text-[10px] font-mono uppercase tracking-widest text-zinc-500 mb-2">Private Key</label>
                 <input
                   type="text"
                   value={angelConfig.privateKey}
                   onChange={(e) => setAngelConfig({ ...angelConfig, privateKey: e.target.value })}
-                  className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                  className="w-full px-3 py-2 text-sm bg-[#0a0a0a] border border-[#333] rounded-lg focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 focus:outline-none text-white font-mono transition-all"
                 />
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-6">
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">
+                <label className="block text-[10px] font-mono uppercase tracking-widest text-zinc-500 mb-2">
                   <Network className="w-3 h-3 inline mr-1" /> Local IP
                 </label>
                 <input
                   type="text"
                   value={angelConfig.clientLocalIP}
                   onChange={(e) => setAngelConfig({ ...angelConfig, clientLocalIP: e.target.value })}
-                  className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                  className="w-full px-3 py-2 text-sm bg-[#0a0a0a] border border-[#333] rounded-lg focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 focus:outline-none text-zinc-300 font-mono transition-all"
                 />
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">
+                <label className="block text-[10px] font-mono uppercase tracking-widest text-zinc-500 mb-2">
                   <Network className="w-3 h-3 inline mr-1" /> Public IP
                 </label>
                 <input
                   type="text"
                   value={angelConfig.clientPublicIP}
                   onChange={(e) => setAngelConfig({ ...angelConfig, clientPublicIP: e.target.value })}
-                  className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                  className="w-full px-3 py-2 text-sm bg-[#0a0a0a] border border-[#333] rounded-lg focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 focus:outline-none text-zinc-300 font-mono transition-all"
                 />
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 border-t pt-4 border-gray-100">
+            <div className="grid grid-cols-2 gap-6 border-t pt-6 border-[#222]">
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Source ID</label>
+                <label className="block text-[10px] font-mono uppercase tracking-widest text-zinc-500 mb-2">Source ID</label>
                 <input
                   type="text"
                   value={angelConfig.sourceId}
                   onChange={(e) => setAngelConfig({ ...angelConfig, sourceId: e.target.value })}
-                  className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500 focus:outline-none uppercase"
+                  className="w-full px-3 py-2 text-sm bg-[#0a0a0a] border border-[#333] rounded-lg focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 focus:outline-none text-white uppercase font-mono transition-all"
                 />
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">
+                <label className="block text-[10px] font-mono uppercase tracking-widest text-zinc-500 mb-2">
                   <Cpu className="w-3 h-3 inline mr-1" /> MAC Address
                 </label>
                 <input
                   type="text"
                   value={angelConfig.macAddress}
                   onChange={(e) => setAngelConfig({ ...angelConfig, macAddress: e.target.value })}
-                  className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500 focus:outline-none font-mono text-xs"
+                  className="w-full px-3 py-2 text-sm bg-[#0a0a0a] border border-[#333] rounded-lg focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 focus:outline-none text-zinc-300 font-mono transition-all"
                 />
               </div>
             </div>
@@ -396,27 +359,30 @@ export default function AdminSettingsPage() {
       </div>
 
       {/* Footer Actions */}
-      <div className="flex items-center justify-between pt-4">
-        <div className="text-sm text-gray-500">
-          {angelConfig.updatedAt && (
-            <>DB Synced: {angelConfig.updatedAt?.toDate?.() ? 
+      <div className="flex items-center justify-between pt-6 border-t border-[#222]">
+        <div className="text-[10px] font-mono uppercase tracking-widest text-zinc-600 flex items-center">
+          <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-2 shadow-[0_0_5px_rgba(16,185,129,0.5)]"></div>
+          {angelConfig.updatedAt ? (
+            <>Last Synced: {angelConfig.updatedAt?.toDate?.() ? 
               new Date(angelConfig.updatedAt.toDate()).toLocaleString('en-IN') :
               new Date(angelConfig.updatedAt).toLocaleString('en-IN')
             }</>
+          ) : (
+            'System Ready'
           )}
         </div>
         
         <button
           onClick={handleUpdateConfig}
           disabled={saving || generatingToken}
-          className="flex items-center space-x-2 px-6 py-2.5 bg-gray-900 text-white font-medium rounded-lg hover:bg-gray-800 disabled:opacity-70 disabled:cursor-not-allowed transition-colors shadow-sm"
+          className="flex items-center space-x-2 px-8 py-3 bg-[#111] border border-[#333] text-white font-semibold rounded-lg hover:bg-[#222] hover:border-emerald-500/50 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg hover:-translate-y-0.5"
         >
           {saving ? (
-            <RefreshCw className="w-4 h-4 animate-spin" />
+            <RefreshCw className="w-4 h-4 animate-spin text-emerald-500" />
           ) : (
-            <Save className="w-4 h-4" />
+            <Save className="w-4 h-4 text-emerald-500" />
           )}
-          <span>{saving ? 'Saving...' : 'Save Settings'}</span>
+          <span>{saving ? 'Syncing...' : 'Save Configuration'}</span>
         </button>
       </div>
     </div>

@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { TrendingUp, Users, Activity, IndianRupee } from 'lucide-react';
+import { TrendingUp, Users, Activity, IndianRupee, ArrowRight } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import Link from 'next/link';
 
@@ -17,7 +17,7 @@ interface Order {
   quantity?: number;
   limitPrice?: number;
   orderStatus?: string;
-  createdAt?: any; // Changed to 'any' to accept Firestore Timestamps or Strings
+  createdAt?: any;
 }
 
 interface ChartData {
@@ -162,38 +162,52 @@ export default function AdminDashboard() {
   }, []);
 
   if (loading) {
-    return <div className="p-8 flex items-center justify-center h-full text-gray-500">Loading Dashboard Data...</div>;
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="flex flex-col items-center gap-4 text-zinc-500 animate-pulse">
+          <div className="w-8 h-8 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-sm font-mono uppercase tracking-widest">Initializing Dashboard...</p>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 text-white" style={{ fontFamily: '"DM Sans", sans-serif' }}>
+      
+      {/* HEADER */}
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold tracking-tight text-white mb-1">Command Center</h1>
+        <p className="text-sm text-zinc-500">System overview and core metric monitoring.</p>
+      </div>
+
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard 
           title="Total Trade Volume" 
           value={`₹${stats.totalVolume.toLocaleString('en-IN', { maximumFractionDigits: 0 })}`} 
-          icon={<IndianRupee className="w-6 h-6" />} 
+          icon={<IndianRupee className="w-5 h-5" />} 
           trend="All Time" 
           positive={true} 
         />
         <StatCard 
           title="Registered Users" 
           value={stats.totalUsers.toString()} 
-          icon={<Users className="w-6 h-6" />} 
+          icon={<Users className="w-5 h-5" />} 
           trend="Active" 
           positive={true} 
         />
         <StatCard 
           title="Pending KYC" 
           value={stats.pendingKyc.toString()} 
-          icon={<Activity className="w-6 h-6" />} 
+          icon={<Activity className="w-5 h-5" />} 
           trend="Requires Action" 
           positive={false} 
         />
         <StatCard 
           title="System Status" 
           value="Optimal" 
-          icon={<TrendingUp className="w-6 h-6" />} 
+          icon={<TrendingUp className="w-5 h-5" />} 
           trend="99.9% Uptime" 
           positive={true} 
         />
@@ -203,56 +217,63 @@ export default function AdminDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
         
         {/* Real Chart */}
-        <div className="lg:col-span-2 bg-white p-6 rounded-xl border shadow-sm flex flex-col">
-          <h3 className="text-lg font-semibold mb-4 text-gray-800">Trading Volume History</h3>
+        <div className="lg:col-span-2 bg-[#050505] p-6 rounded-2xl border border-[#222] shadow-xl flex flex-col relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 rounded-full blur-[80px] -z-10 pointer-events-none"></div>
+          
+          <h3 className="text-lg font-bold mb-6 text-white tracking-tight">Trading Volume History</h3>
           <div className="w-full h-80 min-h-[320px]">
             {chartData.length > 0 ? (
               <ResponsiveContainer width="100%" height={320} minWidth={0} aspect={undefined}>
                 <AreaChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                   <defs>
                     <linearGradient id="colorVolume" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#2563eb" stopOpacity={0.3}/>
-                      <stop offset="95%" stopColor="#2563eb" stopOpacity={0}/>
+                      <stop offset="5%" stopColor="#10B981" stopOpacity={0.2}/>
+                      <stop offset="95%" stopColor="#10B981" stopOpacity={0}/>
                     </linearGradient>
                   </defs>
-                  <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b' }} dy={10} />
-                  <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b' }} tickFormatter={(value) => `₹${value / 1000}k`} />
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                  <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#71717a' }} dy={10} />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#71717a' }} tickFormatter={(value) => `₹${value / 1000}k`} />
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#222" />
                   <Tooltip 
                     formatter={(value: any) => [`₹${Number(value || 0).toLocaleString()}`, 'Volume']}
-                    contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                    contentStyle={{ backgroundColor: '#0a0a0a', border: '1px solid #333', borderRadius: '8px', color: '#fff', fontSize: '12px' }}
+                    itemStyle={{ color: '#10B981' }}
                   />
-                  <Area type="monotone" dataKey="volume" stroke="#2563eb" strokeWidth={3} fillOpacity={1} fill="url(#colorVolume)" />
+                  <Area type="monotone" dataKey="volume" stroke="#10B981" strokeWidth={2} fillOpacity={1} fill="url(#colorVolume)" />
                 </AreaChart>
               </ResponsiveContainer>
             ) : (
-              <div className="h-full w-full flex items-center justify-center text-gray-400 border border-dashed rounded-lg bg-gray-50">
-                Not enough completed trades for chart data.
+              <div className="h-full w-full flex items-center justify-center text-zinc-600 border border-[#222] border-dashed rounded-xl bg-[#0a0a0a]">
+                <p className="text-sm font-mono uppercase tracking-widest">Awaiting Data</p>
               </div>
             )}
           </div>
         </div>
 
         {/* Quick Actions */}
-        <div className="bg-white p-6 rounded-xl border shadow-sm">
-          <h3 className="text-lg font-semibold mb-4 text-gray-800">Quick Actions</h3>
+        <div className="bg-[#050505] p-6 rounded-2xl border border-[#222] shadow-xl">
+          <h3 className="text-lg font-bold mb-6 text-white tracking-tight">Quick Actions</h3>
           <div className="space-y-3">
-            <Link href="/admin/users" className="block">
-              <button className="w-full py-2.5 px-4 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 font-medium transition-colors flex justify-between items-center">
-                Review KYC Requests
-                {stats.pendingKyc > 0 && (
-                  <span className="bg-blue-600 text-white text-xs px-2 py-1 rounded-full">{stats.pendingKyc}</span>
+            <Link href="/admin/users" className="block group">
+              <button className="w-full py-3.5 px-4 bg-[#0a0a0a] border border-[#222] text-zinc-300 rounded-xl hover:bg-[#111] hover:border-[#333] font-medium transition-all flex justify-between items-center text-sm">
+                <span>Review KYC Requests</span>
+                {stats.pendingKyc > 0 ? (
+                  <span className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] px-2 py-0.5 rounded uppercase tracking-widest font-mono">{stats.pendingKyc} Pending</span>
+                ) : (
+                  <ArrowRight className="w-4 h-4 text-zinc-600 group-hover:text-zinc-400 transition-colors" />
                 )}
               </button>
             </Link>
-            <Link href="/admin/fund-requests" className="block">
-              <button className="w-full py-2.5 px-4 bg-amber-50 text-amber-700 rounded-lg hover:bg-amber-100 font-medium transition-colors text-left">
-                Manage Fund Requests
+            <Link href="/admin/fund-requests" className="block group">
+              <button className="w-full py-3.5 px-4 bg-[#0a0a0a] border border-[#222] text-zinc-300 rounded-xl hover:bg-[#111] hover:border-[#333] font-medium transition-all flex justify-between items-center text-sm">
+                <span>Manage Fund Requests</span>
+                <ArrowRight className="w-4 h-4 text-zinc-600 group-hover:text-zinc-400 transition-colors" />
               </button>
             </Link>
-            <Link href="/admin/orders" className="block">
-              <button className="w-full py-2.5 px-4 bg-slate-50 text-slate-700 rounded-lg hover:bg-slate-100 font-medium transition-colors text-left">
-                View All Orders
+            <Link href="/admin/orders" className="block group">
+              <button className="w-full py-3.5 px-4 bg-[#0a0a0a] border border-[#222] text-zinc-300 rounded-xl hover:bg-[#111] hover:border-[#333] font-medium transition-all flex justify-between items-center text-sm">
+                <span>View All System Orders</span>
+                <ArrowRight className="w-4 h-4 text-zinc-600 group-hover:text-zinc-400 transition-colors" />
               </button>
             </Link>
           </div>
@@ -260,52 +281,54 @@ export default function AdminDashboard() {
       </div>
 
       {/* Recent Orders Table */}
-      <div className="bg-white rounded-xl border shadow-sm overflow-hidden mt-6">
-        <div className="p-6 border-b flex justify-between items-center">
-          <h3 className="text-lg font-semibold text-gray-800">Recent Trading Activity</h3>
-          <Link href="/admin/orders" className="text-sm text-blue-600 hover:underline">View all</Link>
+      <div className="bg-[#050505] rounded-2xl border border-[#222] shadow-xl overflow-hidden mt-6">
+        <div className="p-6 border-b border-[#222] flex justify-between items-center bg-[#0a0a0a]">
+          <h3 className="text-lg font-bold text-white tracking-tight">Recent Trading Activity</h3>
+          <Link href="/admin/orders" className="text-[10px] font-mono uppercase tracking-widest text-emerald-500 hover:text-emerald-400 transition-colors flex items-center gap-1">
+            View All Logs <ArrowRight className="w-3 h-3" />
+          </Link>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-left whitespace-nowrap">
-            <thead className="bg-slate-50 text-slate-600 font-medium">
+            <thead className="bg-[#111] text-[10px] font-mono text-zinc-500 uppercase tracking-widest border-b border-[#222]">
               <tr>
-                <th className="px-6 py-3">Order ID</th>
-                <th className="px-6 py-3">User ID</th>
-                <th className="px-6 py-3">Type</th>
-                <th className="px-6 py-3">Asset</th>
-                <th className="px-6 py-3">Total Value</th>
-                <th className="px-6 py-3">Status</th>
+                <th className="px-6 py-4 font-semibold">Order ID</th>
+                <th className="px-6 py-4 font-semibold">User ID</th>
+                <th className="px-6 py-4 font-semibold">Type</th>
+                <th className="px-6 py-4 font-semibold">Asset</th>
+                <th className="px-6 py-4 font-semibold">Total Value</th>
+                <th className="px-6 py-4 font-semibold">Status</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-[#222]">
               {recentOrders.map((order) => {
                 const type = (order.transactionType || 'BUY').toUpperCase();
                 const status = (order.orderStatus || 'PENDING').toUpperCase();
                 const total = (order.quantity || 0) * (order.limitPrice || 0);
 
                 return (
-                  <tr key={order.id} className="hover:bg-slate-50">
-                    <td className="px-6 py-4 font-mono text-xs text-blue-600">#{order.id.slice(0, 8)}</td>
-                    <td className="px-6 py-4 font-mono text-xs text-gray-500 w-32 truncate block" title={order.userId}>
+                  <tr key={order.id} className="hover:bg-[#0a0a0a] transition-colors">
+                    <td className="px-6 py-4 font-mono text-xs text-zinc-400">#{order.id.slice(0, 8)}</td>
+                    <td className="px-6 py-4 font-mono text-xs text-zinc-500 w-32 truncate block" title={order.userId}>
                       {order.userId || 'Unknown'}
                     </td>
                     <td className="px-6 py-4">
-                      <span className={`px-2 py-1 rounded-md text-xs font-medium ${
-                        type === 'BUY' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                      <span className={`px-2.5 py-1 rounded-md text-[10px] font-mono uppercase tracking-widest border ${
+                        type === 'BUY' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-red-500/10 text-red-400 border-red-500/20'
                       }`}>
                         {type}
                       </span>
                     </td>
-                    <td className="px-6 py-4 font-semibold text-gray-800">{order.symbol || order.companyName || '-'}</td>
-                    <td className="px-6 py-4 font-medium">₹{total.toLocaleString()}</td>
+                    <td className="px-6 py-4 font-semibold text-white tracking-wide">{order.symbol || order.companyName || '-'}</td>
+                    <td className="px-6 py-4 font-medium text-zinc-300">₹{total.toLocaleString()}</td>
                     <td className="px-6 py-4">
                       <span className={`flex items-center text-xs font-medium ${
-                        status === 'COMPLETED' ? 'text-green-600' : 
+                        status === 'COMPLETED' ? 'text-emerald-500' : 
                         status === 'CANCELLED' ? 'text-red-500' : 
                         'text-amber-500'
                       }`}>
-                        <span className={`w-1.5 h-1.5 rounded-full mr-2 ${
-                          status === 'COMPLETED' ? 'bg-green-500' : 
+                        <span className={`w-1.5 h-1.5 rounded-full mr-2 shadow-[0_0_8px_currentColor] ${
+                          status === 'COMPLETED' ? 'bg-emerald-500' : 
                           status === 'CANCELLED' ? 'bg-red-500' : 
                           'bg-amber-500'
                         }`}></span>
@@ -317,8 +340,8 @@ export default function AdminDashboard() {
               })}
               {recentOrders.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
-                    No recent orders found.
+                  <td colSpan={6} className="px-6 py-12 text-center text-zinc-600 text-sm">
+                    No recent activity logs found.
                   </td>
                 </tr>
               )}
@@ -333,17 +356,17 @@ export default function AdminDashboard() {
 // Reusable Stat Card Component
 function StatCard({ title, value, icon, trend, positive }: { title: string, value: string, icon: React.ReactNode, trend: string, positive: boolean }) {
   return (
-    <div className="bg-white p-6 rounded-xl border shadow-sm flex flex-col">
-      <div className="flex justify-between items-start mb-4">
-        <div className="p-2 bg-blue-50 text-blue-600 rounded-lg">
+    <div className="bg-[#050505] p-6 rounded-2xl border border-[#222] shadow-xl flex flex-col group hover:border-[#333] transition-colors relative overflow-hidden">
+      <div className="flex justify-between items-start mb-6">
+        <div className="p-2.5 bg-[#111] text-emerald-500 rounded-xl border border-[#333] group-hover:border-emerald-500/30 transition-colors">
           {icon}
         </div>
-        <span className={`text-xs font-medium px-2 py-1 rounded-full ${positive ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
+        <span className={`text-[10px] font-mono uppercase tracking-widest px-2 py-1 rounded border ${positive ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-red-500/10 text-red-400 border-red-500/20'}`}>
           {trend}
         </span>
       </div>
-      <h4 className="text-slate-500 text-sm font-medium mb-1">{title}</h4>
-      <p className="text-2xl font-bold text-gray-900">{value}</p>
+      <h4 className="text-zinc-500 text-[10px] font-mono uppercase tracking-widest mb-1">{title}</h4>
+      <p className="text-3xl font-bold text-white tracking-tight">{value}</p>
     </div>
   );
 }

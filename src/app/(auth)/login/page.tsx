@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
+import { motion } from 'framer-motion';
+import { Shield, Lock, ArrowRight } from 'lucide-react';
 
 export default function AdminLogin() {
   const router = useRouter();
@@ -21,73 +23,96 @@ export default function AdminLogin() {
       await signInWithEmailAndPassword(auth, email, password);
       router.push('/admin');
     } catch (error: any) {
-      setError(error.message || 'Failed to sign in');
+      setError(error.message || 'Failed to sign in. Verify credentials.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f8fafc' }}>
-      <div style={{ textAlign: 'center' }}>
-        <h1 style={{ fontSize: '2rem', fontWeight: 'bold', color: '#1e293b', marginBottom: '1rem' }}>BullXchange Admin</h1>
-        <p style={{ color: '#64748b', marginBottom: '2rem' }}>Sign in to access the control panel</p>
-        
-        <form onSubmit={handleLogin} style={{ backgroundColor: 'white', padding: '2rem', borderRadius: '0.5rem', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', maxWidth: '28rem', width: '100%' }}>
-          {error && (
-            <div style={{ backgroundColor: '#fee', color: '#c00', padding: '0.75rem', borderRadius: '0.375rem', marginBottom: '1rem' }}>
-              {error}
-            </div>
-          )}
+    // Global DM Sans and strict dark mode background
+    <div className="min-h-screen bg-black text-white selection:bg-emerald-500 selection:text-black overflow-hidden antialiased flex items-center justify-center px-6 relative" style={{ fontFamily: '"DM Sans", sans-serif' }}>
+      
+      {/* TECH GRID BACKGROUND */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none z-0"></div>
+
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }} 
+        animate={{ opacity: 1, y: 0 }} 
+        transition={{ duration: 0.5, ease: "easeOut" }}
+        className="w-full max-w-md bg-[#050505] rounded-3xl p-8 md:p-10 border border-[#222] shadow-2xl relative overflow-hidden group z-10"
+      >
+        {/* Subtle background glow */}
+        <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 rounded-full blur-[80px] -z-10 group-hover:bg-emerald-500/10 transition-colors duration-700"></div>
+
+        {/* HEADER */}
+        <div className="text-center mb-10">
+          <div className="mx-auto w-12 h-12 rounded-xl border border-[#333] bg-[#1a1a1a] flex items-center justify-center mb-6">
+            <Shield className="w-6 h-6 text-emerald-500" />
+          </div>
+          <h1 className="text-3xl font-bold text-white tracking-tight mb-2">System Access</h1>
+          <p className="text-sm text-zinc-500">Authenticate to enter the control panel.</p>
+        </div>
+
+        {/* FORM */}
+        <form onSubmit={handleLogin} className="space-y-6">
           
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            <div>
-              <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', color: '#374151', marginBottom: '0.25rem' }}>
-                Email address
-              </label>
+          {error && (
+            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm flex items-center gap-2">
+               <span className="w-1.5 h-1.5 rounded-full bg-red-500"></span> {error}
+            </motion.div>
+          )}
+
+          <div className="space-y-5">
+            <div className="space-y-2">
+              <label className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 ml-1">Admin Email</label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                style={{ width: '100%', padding: '0.75rem 0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', outline: 'none' }}
                 placeholder="admin@bullxchange.com"
                 required
+                className="w-full bg-[#0a0a0a] border border-[#333] rounded-lg px-4 py-3.5 text-sm text-white placeholder-zinc-700 focus:outline-none focus:border-emerald-500 focus:bg-[#111] transition-all"
               />
             </div>
             
-            <div>
-              <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', color: '#374151', marginBottom: '0.25rem' }}>
-                Password
-              </label>
+            <div className="space-y-2">
+              <label className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 ml-1">Security Key</label>
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                style={{ width: '100%', padding: '0.75rem 0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', outline: 'none' }}
-                placeholder="••••••"
+                placeholder="••••••••"
                 required
+                className="w-full bg-[#0a0a0a] border border-[#333] rounded-lg px-4 py-3.5 text-sm text-white placeholder-zinc-700 focus:outline-none focus:border-emerald-500 focus:bg-[#111] transition-all"
               />
             </div>
-            
-            <button
-              type="submit"
-              disabled={loading}
-              style={{ 
-                width: '100%', 
-                backgroundColor: loading ? '#9ca3af' : '#3b82f6', 
-                color: 'white', 
-                padding: '0.625rem 1rem', 
-                borderRadius: '0.375rem', 
-                border: 'none', 
-                cursor: loading ? 'not-allowed' : 'pointer',
-                opacity: loading ? 0.7 : 1
-              }}
-            >
-              {loading ? 'Signing in...' : 'Sign in to Dashboard'}
-            </button>
           </div>
+          
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full mt-8 bg-white text-black font-semibold py-4 rounded-lg flex items-center justify-center gap-2 hover:bg-zinc-200 transition-colors hover:-translate-y-0.5 shadow-[0_0_20px_rgba(255,255,255,0.1)] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+          >
+            {loading ? (
+              <>
+                <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
+                Authenticating...
+              </>
+            ) : (
+              <>
+                <Lock className="w-4 h-4" /> Initialize Session <ArrowRight className="w-4 h-4 ml-1" />
+              </>
+            )}
+          </button>
         </form>
-      </div>
+
+        {/* FOOTER */}
+        <div className="mt-8 pt-6 border-t border-[#222] text-center">
+          <p className="text-[10px] text-zinc-600 font-mono uppercase tracking-widest">BullXchange Admin Portal</p>
+        </div>
+
+      </motion.div>
     </div>
   );
 }

@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { Search, CheckCircle2, Clock, XCircle, FileText } from 'lucide-react';
+import { Search, CheckCircle2, Clock, XCircle, FileText, ArrowRightLeft } from 'lucide-react';
 
 // 1. Transaction Interface
 interface Transaction {
@@ -50,7 +50,7 @@ const getSafeDate = (dateVal?: any) => {
   return new Date(0);
 };
 
-// 3. Highlight Utility: Wraps matching search text in a yellow <mark>
+// 3. Highlight Utility: Wraps matching search text in an emerald glow
 const HighlightText = ({ text, highlight }: { text: string; highlight: string }) => {
   if (!highlight.trim()) return <>{text}</>;
   
@@ -61,7 +61,7 @@ const HighlightText = ({ text, highlight }: { text: string; highlight: string })
     <>
       {parts.map((part, i) => 
         regex.test(part) ? (
-          <mark key={i} className="bg-yellow-200 text-gray-900 px-0.5 rounded-sm font-semibold">
+          <mark key={i} className="bg-emerald-500/20 text-emerald-400 px-0.5 rounded-sm font-bold shadow-[0_0_8px_rgba(16,185,129,0.2)]">
             {part}
           </mark>
         ) : (
@@ -143,44 +143,58 @@ export default function TransactionsPage() {
 
   const getStatusDisplay = (status: string) => {
     const s = status.toUpperCase();
-    if (s === 'EXECUTED') return { color: 'bg-green-100 text-green-800', icon: <CheckCircle2 className="w-3 h-3 mr-1" /> };
-    if (s === 'CANCELLED' || s === 'REJECTED') return { color: 'bg-red-100 text-red-800', icon: <XCircle className="w-3 h-3 mr-1" /> };
-    return { color: 'bg-amber-100 text-amber-800', icon: <Clock className="w-3 h-3 mr-1" /> };
+    if (s === 'EXECUTED' || s === 'COMPLETED') return { color: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20', icon: <CheckCircle2 className="w-3 h-3 mr-1.5" /> };
+    if (s === 'CANCELLED' || s === 'REJECTED') return { color: 'bg-red-500/10 text-red-400 border-red-500/20', icon: <XCircle className="w-3 h-3 mr-1.5" /> };
+    return { color: 'bg-amber-500/10 text-amber-400 border-amber-500/20', icon: <Clock className="w-3 h-3 mr-1.5" /> };
   };
 
-  if (loading) return <div className="p-8">Loading transactions & user data...</div>;
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="flex flex-col items-center gap-4 text-zinc-500 animate-pulse">
+          <div className="w-8 h-8 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-sm font-mono uppercase tracking-widest">Compiling Trade Ledger...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h2 className="text-2xl font-bold text-gray-800">Trade Transactions</h2>
+    <div className="space-y-6 relative text-white" style={{ fontFamily: '"DM Sans", sans-serif' }}>
+      
+      {/* HEADER & FILTERS */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+        <div>
+          <h2 className="text-2xl font-bold tracking-tight text-white mb-1">Trade Transactions</h2>
+          <p className="text-sm text-zinc-500">Comprehensive ledger of all system executions.</p>
+        </div>
         
-        <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
+        <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
           {/* Search */}
-          <div className="relative w-full sm:w-72">
-            <Search className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+          <div className="relative w-full md:w-72">
+            <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-zinc-500" />
             <input
               type="text"
-              placeholder="Search ID, Company, Name, Email..."
+              placeholder="Search ID, Entity, Name, Email..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+              className="w-full pl-9 pr-4 py-2 border border-[#333] bg-[#0a0a0a] rounded-lg focus:outline-none focus:border-emerald-500 focus:bg-[#111] transition-all text-sm text-white placeholder-zinc-600"
             />
           </div>
 
           {/* Status Filters */}
-          <div className="flex bg-gray-100 p-1 rounded-lg">
+          <div className="flex p-1 bg-[#0a0a0a] rounded-xl border border-[#222] w-full md:w-auto overflow-x-auto">
             {['ALL', 'EXECUTED', 'PENDING', 'CANCELLED'].map((status) => (
               <button
                 key={status}
                 onClick={() => setStatusFilter(status)}
-                className={`px-4 py-1.5 text-sm font-medium rounded-md transition-colors ${
+                className={`px-4 py-2 rounded-lg text-[10px] font-mono uppercase tracking-widest transition-all whitespace-nowrap ${
                   statusFilter === status 
-                    ? 'bg-blue-600 text-white shadow-sm' 
-                    : 'text-gray-600 hover:bg-gray-200'
+                    ? 'bg-[#111] text-emerald-400 border border-[#333] shadow-[0_2px_10px_rgba(0,0,0,0.5)]' 
+                    : 'text-zinc-500 border border-transparent hover:text-zinc-300'
                 }`}
               >
-                {status.charAt(0) + status.slice(1).toLowerCase()}
+                {status}
               </button>
             ))}
           </div>
@@ -188,22 +202,22 @@ export default function TransactionsPage() {
       </div>
       
       {/* Transaction Table */}
-      <div className="bg-white rounded-xl border shadow-sm overflow-hidden">
-        <div className="overflow-x-auto">
+      <div className="bg-[#050505] rounded-2xl border border-[#222] shadow-xl overflow-hidden">
+        <div className="overflow-x-auto custom-scrollbar">
           <table className="w-full text-sm text-left whitespace-nowrap">
-            <thead className="bg-slate-50 text-slate-600 font-medium">
+            <thead className="bg-[#111] text-[10px] font-mono text-zinc-500 uppercase tracking-widest border-b border-[#222]">
               <tr>
-                <th className="px-6 py-4">Transaction ID</th>
-                <th className="px-6 py-4">User Details</th>
-                <th className="px-6 py-4">Contract Details</th>
-                <th className="px-6 py-4">Order Type</th>
-                <th className="px-6 py-4">Qty / Lot Size</th>
-                <th className="px-6 py-4">Total Value</th>
-                <th className="px-6 py-4">Status</th>
-                <th className="px-6 py-4">Executed At</th>
+                <th className="px-6 py-4 font-semibold">Transaction ID</th>
+                <th className="px-6 py-4 font-semibold">User Details</th>
+                <th className="px-6 py-4 font-semibold">Contract Details</th>
+                <th className="px-6 py-4 font-semibold">Order Type</th>
+                <th className="px-6 py-4 font-semibold">Qty / Lot Size</th>
+                <th className="px-6 py-4 font-semibold">Total Value</th>
+                <th className="px-6 py-4 font-semibold">Status</th>
+                <th className="px-6 py-4 font-semibold">Executed At</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-[#222]">
               {filteredTransactions.map((tx) => {
                 const statusInfo = getStatusDisplay(tx.orderStatus || 'PENDING');
                 const safeDate = getSafeDate(tx.executedAt);
@@ -224,66 +238,67 @@ export default function TransactionsPage() {
                 return (
                   <tr 
                     key={tx.id} 
-                    onClick={() => setHighlightedRowId(tx.id)}
-                    className={`cursor-pointer transition-all ${
+                    onClick={() => setHighlightedRowId(tx.id === highlightedRowId ? null : tx.id)}
+                    className={`cursor-pointer transition-all group ${
                       highlightedRowId === tx.id 
-                        ? 'bg-blue-50 border-l-4 border-blue-600 shadow-inner' 
-                        : 'hover:bg-slate-50 border-l-4 border-transparent'
+                        ? 'bg-[#111] border-l-2 border-emerald-500' 
+                        : 'hover:bg-[#0a0a0a] border-l-2 border-transparent'
                     }`}
                   >
-                    <td className="px-6 py-4 font-mono text-xs text-blue-600">
+                    <td className="px-6 py-4 font-mono text-[11px] text-zinc-500">
                       <HighlightText text={`#${tx.id.slice(0, 8)}`} highlight={searchTerm} />
                     </td>
                     
-                    {/* NEW: User Details Column */}
+                    {/* User Details Column */}
                     <td className="px-6 py-4">
-                      <div className="font-medium text-gray-900">
+                      <div className="font-semibold text-white tracking-wide">
                         <HighlightText text={displayName} highlight={searchTerm} />
                       </div>
-                      <div className="text-xs text-gray-500">
+                      <div className="text-[10px] font-mono text-zinc-500 mt-1 uppercase tracking-wider">
                         <HighlightText text={displayEmail} highlight={searchTerm} />
                       </div>
                     </td>
                     
+                    {/* Contract Details */}
                     <td className="px-6 py-4">
-                      <div className="flex items-center">
-                        <FileText className="w-4 h-4 text-gray-400 mr-2 flex-shrink-0" />
+                      <div className="flex items-start">
+                        <FileText className="w-4 h-4 text-zinc-600 mr-2.5 mt-0.5 flex-shrink-0 group-hover:text-emerald-500 transition-colors" />
                         <div>
-                          <div className="font-bold text-gray-900">
+                          <div className="font-bold text-white tracking-wide">
                             <HighlightText text={tx.companyName || '-'} highlight={searchTerm} /> 
-                            {tx.optionType ? <span className="text-blue-600 ml-1">{tx.optionType}</span> : ''}
+                            {tx.optionType ? <span className="text-emerald-400 ml-1 font-mono tracking-widest text-[10px] bg-emerald-500/10 px-1.5 py-0.5 rounded">{tx.optionType}</span> : ''}
                           </div>
-                          <div className="text-xs text-gray-500 flex gap-2 mt-0.5">
+                          <div className="text-[10px] font-mono text-zinc-500 flex gap-2 mt-1.5 uppercase tracking-wider">
                             <span>{tx.exchange || '-'}</span>
-                            {tx.expiryDate && <span>• Exp: {tx.expiryDate}</span>}
+                            {tx.expiryDate && <span>• EXP: {tx.expiryDate}</span>}
                           </div>
                         </div>
                       </div>
                     </td>
 
                     <td className="px-6 py-4">
-                      <div className="font-medium text-gray-800">{tx.orderType || '-'}</div>
-                      <div className="text-xs text-gray-500">{tx.productType || '-'}</div>
+                      <div className="font-medium text-zinc-300">{tx.orderType || '-'}</div>
+                      <div className="text-[10px] font-mono text-zinc-500 mt-1 uppercase tracking-wider">{tx.productType || '-'}</div>
                     </td>
 
                     <td className="px-6 py-4">
-                      <div className="font-medium">{tx.quantity || 0}</div>
-                      <div className="text-xs text-gray-500">Lot: {tx.lotSize || '-'}</div>
+                      <div className="font-medium text-white">{tx.quantity || 0}</div>
+                      <div className="text-[10px] font-mono text-zinc-500 mt-1 uppercase tracking-wider">LOT: {tx.lotSize || '-'}</div>
                     </td>
 
                     <td className="px-6 py-4">
-                      <div className="font-bold text-gray-900">₹{totalValue.toLocaleString('en-IN')}</div>
-                      <div className="text-xs text-red-600 font-medium mt-0.5">Charges: ₹{tx.charges?.toFixed(2) || '0.00'}</div>
+                      <div className="font-bold text-white tracking-tight">₹{totalValue.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                      <div className="text-[10px] text-red-400 font-mono mt-1 uppercase tracking-wider">CHARGES: ₹{tx.charges?.toFixed(2) || '0.00'}</div>
                     </td>
 
                     <td className="px-6 py-4">
-                      <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium ${statusInfo.color}`}>
+                      <span className={`inline-flex items-center px-2.5 py-1 rounded border text-[10px] font-mono uppercase tracking-widest ${statusInfo.color}`}>
                         {statusInfo.icon}
-                        {(tx.orderStatus || 'PENDING').charAt(0) + (tx.orderStatus || 'PENDING').slice(1).toLowerCase()}
+                        {(tx.orderStatus || 'PENDING')}
                       </span>
                     </td>
 
-                    <td className="px-6 py-4 text-xs text-gray-500">
+                    <td className="px-6 py-4 text-[11px] font-mono text-zinc-500 tracking-wide">
                       {dateDisplay}
                     </td>
                   </tr>
@@ -291,8 +306,11 @@ export default function TransactionsPage() {
               })}
               {filteredTransactions.length === 0 && (
                 <tr>
-                  <td colSpan={8} className="px-6 py-8 text-center text-gray-500">
-                    No transactions found matching "{searchTerm}"
+                  <td colSpan={8} className="px-6 py-16 text-center text-zinc-600 text-sm">
+                    <div className="flex flex-col items-center justify-center space-y-3">
+                      <ArrowRightLeft className="w-8 h-8 text-zinc-700" />
+                      <p>No transactions found matching the parameters.</p>
+                    </div>
                   </td>
                 </tr>
               )}

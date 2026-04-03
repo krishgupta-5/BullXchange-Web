@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { collection, query, getDocs, doc, updateDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { Check, X, Clock, ShoppingCart, Package, TrendingUp, TrendingDown } from 'lucide-react';
+import { Check, X, Clock, ShoppingCart, Package, TrendingUp, TrendingDown, FileText } from 'lucide-react';
 
 // 1. Interface updated to match your exact Firestore fields
 interface Order {
@@ -62,7 +62,8 @@ export default function OrdersPage() {
         order.id === orderId ? { ...order, orderStatus: newStatus, updatedAt: new Date().toISOString() } : order
       ));
       
-      alert(`Order ${newStatus} successfully!`);
+      // Optional: Replace alert with a toast notification in a real app
+      // alert(`Order ${newStatus} successfully!`);
     } catch (error) {
       console.error(`Error updating order to ${newStatus}:`, error);
       alert("Failed to update status. Are you logged in as the Admin?");
@@ -75,135 +76,166 @@ export default function OrdersPage() {
     return filter === 'ALL' || currentStatus === filter;
   });
 
-  const getStatusIcon = (status: string) => {
-    switch (status.toUpperCase()) {
-      case 'PENDING': return <Clock className="w-4 h-4" />;
-      case 'COMPLETED': return <Check className="w-4 h-4" />;
-      case 'CANCELLED': return <X className="w-4 h-4" />;
-      default: return <Package className="w-4 h-4" />;
-    }
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status.toUpperCase()) {
-      case 'PENDING': return 'bg-amber-100 text-amber-800';
-      case 'COMPLETED': return 'bg-green-100 text-green-800';
-      case 'CANCELLED': return 'bg-red-100 text-red-800';
-      case 'FAILED': return 'bg-gray-100 text-gray-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
-
-  const getTypeIcon = (type: string) => {
-    return type?.toUpperCase() === 'BUY' ? 
-      <TrendingUp className="w-4 h-4 text-green-600" /> : 
-      <TrendingDown className="w-4 h-4 text-red-600" />;
-  };
-
-  if (loading) return <div className="p-8">Loading orders...</div>;
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="flex flex-col items-center gap-4 text-zinc-500 animate-pulse">
+          <div className="w-8 h-8 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-sm font-mono uppercase tracking-widest">Loading Order Logs...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-gray-800">Orders Management</h2>
+    <div className="space-y-6 relative text-white" style={{ fontFamily: '"DM Sans", sans-serif' }}>
+      
+      {/* HEADER & FILTERS */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+        <div>
+          <h2 className="text-2xl font-bold tracking-tight text-white mb-1">Orders Management</h2>
+          <p className="text-sm text-zinc-500">Monitor and execute system-wide trade requests.</p>
+        </div>
         
-        <div className="flex space-x-2">
+        <div className="flex p-1 bg-[#0a0a0a] rounded-xl border border-[#222] w-full md:w-auto overflow-x-auto">
           {(['ALL', 'PENDING', 'COMPLETED', 'CANCELLED'] as const).map((status) => (
             <button
               key={status}
               onClick={() => setFilter(status)}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+              className={`px-4 py-2 rounded-lg text-[10px] font-mono uppercase tracking-widest transition-all whitespace-nowrap ${
                 filter === status
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  ? 'bg-[#111] text-emerald-400 border border-[#333] shadow-[0_2px_10px_rgba(0,0,0,0.5)]'
+                  : 'text-zinc-500 border border-transparent hover:text-zinc-300'
               }`}
             >
-              {status.charAt(0) + status.slice(1).toLowerCase()}
+              {status}
             </button>
           ))}
         </div>
       </div>
       
-      <div className="bg-white rounded-xl border shadow-sm overflow-hidden">
-        <table className="w-full text-sm text-left">
-          <thead className="bg-slate-50 text-slate-600 font-medium">
-            <tr>
-              <th className="px-6 py-3">Order ID</th>
-              <th className="px-6 py-3">User ID</th>
-              <th className="px-6 py-3">Type</th>
-              <th className="px-6 py-3">Asset</th>
-              <th className="px-6 py-3">Amount</th>
-              <th className="px-6 py-3">Price</th>
-              <th className="px-6 py-3">Total</th>
-              <th className="px-6 py-3">Status</th>
-              <th className="px-6 py-3">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100">
-            {filteredOrders.map((order) => {
-              // Extract correct DB values with fallbacks
-              const currentStatus = order.orderStatus || 'PENDING';
-              const type = order.transactionType || 'BUY';
-              const asset = order.symbol || order.companyName || 'Unknown';
-              const qty = order.quantity || 0;
-              const price = order.limitPrice || 0;
-              const total = qty * price;
+      {/* TABLE */}
+      <div className="bg-[#050505] rounded-2xl border border-[#222] shadow-xl overflow-hidden">
+        <div className="overflow-x-auto custom-scrollbar">
+          <table className="w-full text-sm text-left whitespace-nowrap">
+            <thead className="bg-[#111] text-[10px] font-mono text-zinc-500 uppercase tracking-widest border-b border-[#222]">
+              <tr>
+                <th className="px-6 py-4 font-semibold">Order ID</th>
+                <th className="px-6 py-4 font-semibold">User ID</th>
+                <th className="px-6 py-4 font-semibold">Type</th>
+                <th className="px-6 py-4 font-semibold">Asset</th>
+                <th className="px-6 py-4 font-semibold">Qty</th>
+                <th className="px-6 py-4 font-semibold">Price</th>
+                <th className="px-6 py-4 font-semibold">Total Value</th>
+                <th className="px-6 py-4 font-semibold">Status</th>
+                <th className="px-6 py-4 font-semibold text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-[#222]">
+              {filteredOrders.map((order) => {
+                // Extract correct DB values with fallbacks
+                const currentStatus = (order.orderStatus || 'PENDING').toUpperCase();
+                const type = (order.transactionType || 'BUY').toUpperCase();
+                const asset = order.symbol || order.companyName || 'Unknown';
+                const qty = order.quantity || 0;
+                const price = order.limitPrice || 0;
+                const total = qty * price;
 
-              return (
-                <tr key={order.id} className="hover:bg-slate-50">
-                  <td className="px-6 py-4 font-mono text-xs text-blue-600">#{order.id.slice(-8)}</td>
-                  <td className="px-6 py-4 font-mono text-xs text-gray-500">
-                    <div className="truncate w-24" title={order.userId}>{order.userId}</div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center space-x-2">
-                      {getTypeIcon(type)}
-                      <span className="font-medium">{type}</span>
+                return (
+                  <tr key={order.id} className="hover:bg-[#0a0a0a] transition-colors group">
+                    <td className="px-6 py-4 font-mono text-[11px] text-zinc-500">#{order.id.slice(-8)}</td>
+                    <td className="px-6 py-4 font-mono text-[10px] text-zinc-600">
+                      <div className="truncate w-20" title={order.userId}>{order.userId}</div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className={`inline-flex items-center px-2 py-1 rounded border text-[10px] font-mono uppercase tracking-widest ${
+                        type === 'BUY' 
+                          ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' 
+                          : 'bg-red-500/10 text-red-400 border-red-500/20'
+                      }`}>
+                        {type === 'BUY' ? <TrendingUp className="w-3 h-3 mr-1" /> : <TrendingDown className="w-3 h-3 mr-1" />}
+                        {type}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 font-bold text-white tracking-wide">{asset}</td>
+                    <td className="px-6 py-4 text-zinc-300">{qty}</td>
+                    <td className="px-6 py-4 font-mono text-xs text-zinc-400">₹{price.toFixed(2)}</td>
+                    <td className="px-6 py-4 font-bold text-white tracking-tight">₹{total.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                    <td className="px-6 py-4">
+                      <span className={`flex items-center text-xs font-medium ${
+                        currentStatus === 'COMPLETED' ? 'text-emerald-500' : 
+                        currentStatus === 'CANCELLED' ? 'text-red-500' : 
+                        'text-amber-500'
+                      }`}>
+                        <span className={`w-1.5 h-1.5 rounded-full mr-2 shadow-[0_0_8px_currentColor] ${
+                          currentStatus === 'COMPLETED' ? 'bg-emerald-500' : 
+                          currentStatus === 'CANCELLED' ? 'bg-red-500' : 
+                          'bg-amber-500'
+                        }`}></span>
+                        {currentStatus.charAt(0) + currentStatus.slice(1).toLowerCase()}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      {currentStatus === 'PENDING' ? (
+                        <div className="flex items-center justify-end space-x-2">
+                          <button 
+                            onClick={() => handleStatusUpdate(order.id, 'COMPLETED')}
+                            className="p-1.5 border border-emerald-500/20 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 rounded-lg transition-all shadow-sm"
+                            title="Mark Completed"
+                          >
+                            <Check className="w-4 h-4" />
+                          </button>
+                          <button 
+                            onClick={() => handleStatusUpdate(order.id, 'CANCELLED')}
+                            className="p-1.5 border border-red-500/20 bg-red-500/10 text-red-400 hover:bg-red-500/20 rounded-lg transition-all shadow-sm"
+                            title="Cancel Order"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="flex justify-end text-zinc-600">
+                          <Minus className="w-4 h-4" />
+                        </div>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
+              {filteredOrders.length === 0 && (
+                <tr>
+                  <td colSpan={9} className="px-6 py-16 text-center text-zinc-600 text-sm">
+                    <div className="flex flex-col items-center justify-center space-y-3">
+                      <FileText className="w-8 h-8 text-zinc-700" />
+                      <p>No orders found matching the current filter.</p>
                     </div>
                   </td>
-                  <td className="px-6 py-4 font-semibold">{asset}</td>
-                  <td className="px-6 py-4">{qty}</td>
-                  <td className="px-6 py-4">₹{price.toFixed(2)}</td>
-                  <td className="px-6 py-4 font-bold text-gray-900">₹{total.toFixed(2)}</td>
-                  <td className="px-6 py-4">
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(currentStatus)}`}>
-                      {getStatusIcon(currentStatus)}
-                      <span className="ml-1">{currentStatus.charAt(0) + currentStatus.slice(1).toLowerCase()}</span>
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    {currentStatus.toUpperCase() === 'PENDING' && (
-                      <div className="flex space-x-2">
-                        <button 
-                          onClick={() => handleStatusUpdate(order.id, 'COMPLETED')}
-                          className="p-1.5 bg-green-50 text-green-600 hover:bg-green-100 rounded-md transition-colors"
-                          title="Complete"
-                        >
-                          <Check className="w-4 h-4" />
-                        </button>
-                        <button 
-                          onClick={() => handleStatusUpdate(order.id, 'CANCELLED')}
-                          className="p-1.5 bg-red-50 text-red-600 hover:bg-red-100 rounded-md transition-colors"
-                          title="Cancel"
-                        >
-                          <X className="w-4 h-4" />
-                        </button>
-                      </div>
-                    )}
-                  </td>
                 </tr>
-              );
-            })}
-            {filteredOrders.length === 0 && (
-              <tr>
-                <td colSpan={9} className="px-6 py-8 text-center text-gray-500">
-                  No orders found for the selected filter.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
+  );
+}
+
+// Temporary icon fallback if lucide-react minus is missing from imports
+function Minus(props: any) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <line x1="5" y1="12" x2="19" y2="12" />
+    </svg>
   );
 }
