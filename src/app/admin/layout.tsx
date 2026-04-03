@@ -35,7 +35,7 @@ export default function AdminLayout({
         setIsAuthorized(false);
         if (typeof window !== 'undefined') {
           // Redirect to the actual admin login page
-          router.push('/admin/login');
+          router.push('/login');
         }
       }
     });
@@ -47,7 +47,7 @@ export default function AdminLayout({
     try {
       await signOut(auth);
       // Redirect to the admin login page after logout
-      router.push('/admin/login');
+      router.push('/login');
     } catch (error) {
       console.error('Error signing out:', error);
     }
