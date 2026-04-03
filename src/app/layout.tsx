@@ -13,6 +13,14 @@ const dmSans = DM_Sans({
 export const metadata: Metadata = {
   title: "BullXchange - Professional Paper Trading Platform",
   description: "Master trading without risking real money. Practice stocks and options trading with ₹10,00,000 virtual cash.",
+  icons: {
+    icon: [
+      { url: "/favicon.png", sizes: "512x512", type: "image/png" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+    ],
+    apple: { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+  },
 };
 
 export default function RootLayout({
