@@ -146,8 +146,8 @@ export default function BullXchangeLanding() {
               </div>
               <div className="flex-1 p-4 relative flex flex-col bg-[#050505]">
                 {mounted && (
-                  <div className="h-48 w-full mt-4">
-                    <ResponsiveContainer width="100%" height="100%">
+                  <div className="w-full mt-4" style={{ height: '192px' }}>
+                    <ResponsiveContainer width="100%" height={192}>
                       <AreaChart data={mockStockData}>
                         <defs>
                           <linearGradient id="colorMain" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#10B981" stopOpacity={0.2}/><stop offset="95%" stopColor="#10B981" stopOpacity={0}/></linearGradient>
