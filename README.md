@@ -1,9 +1,52 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# BullXchange - Paper Trading Simulator
+
+A professional paper trading platform that simulates real market conditions without financial risk. Practice stocks and F&O trading with virtual capital and live market data.
+
+## Features
+
+- **Risk-Free Trading**: Practice with virtual money without risking real capital
+- **Live Market Data**: Real-time NSE/BSE stock quotes and market simulation
+- **Stocks & F&O**: Trade both equities and derivatives (Call/Put options)
+- **Virtual Capital**: Start with 10,00,000 in virtual cash
+- **Professional Interface**: Terminal-grade trading experience
+- **Mobile App**: Native Android application for on-the-go trading practice
+
+## Tech Stack
+
+- **Frontend**: Next.js 14, React, TypeScript
+- **Styling**: Tailwind CSS
+- **Animations**: Framer Motion
+- **Charts**: Recharts
+- **Icons**: Lucide React
+- **Deployment**: Vercel
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
+- Node.js 18+ 
+- npm, yarn, pnpm, or bun
+
+### Installation
+
+1. Clone the repository:
+```bash
+git clone https://github.com/krishgupta-5/BullXchange-Web.git
+cd BullXchange-Web
+```
+
+2. Install dependencies:
+```bash
+npm install
+# or
+yarn install
+# or
+pnpm install
+# or
+bun install
+```
+
+3. Run the development server:
 ```bash
 npm run dev
 # or
@@ -14,23 +57,74 @@ pnpm dev
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+4. Open [http://localhost:3000](http://localhost:3000) in your browser
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Project Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+src/
+  app/                 # Next.js app router
+    (auth)/           # Authentication routes
+    (public)/         # Public routes
+    admin/            # Admin dashboard
+    globals.css       # Global styles
+    layout.tsx        # Root layout
+    page.tsx          # Landing page
+  components/         # Reusable components
+    Footer.tsx        # Footer component
+    Navbar.tsx        # Navigation bar
+  lib/               # Utility libraries
+    firebase.ts       # Firebase configuration
+public/              # Static assets
+  app_icon.png       # Application icon
+  QR IMAGE.png       # Download QR code
+```
 
-## Learn More
+## Key Features
 
-To learn more about Next.js, take a look at the following resources:
+### Trading Simulation
+- Real-time market data integration
+- Paper trading with virtual capital
+- Support for equities and derivatives
+- Professional trading interface
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### User Experience
+- Responsive design for all devices
+- Smooth animations and transitions
+- Mobile app integration
+- Download QR code for easy access
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Data Sources
+- Angel One Smart API for real-time market data
+- Live NSE/BSE stock quotes
+- Options chain data
 
-## Deploy on Vercel
+## Download App
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Scan the QR code on the website or download directly:
+- **Android**: [Download from Mega.nz](https://mega.nz/file/9r91FSjJ#VNAMug3oWtpEyrWsMZ91Qw5qAvMe_T4LUe-D5Kai1PQ)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## License
+
+This project is for educational and practice purposes only. All trading is simulated with virtual money.
+
+## Contact
+
+For suggestions and feedback:
+- Email: [openforgein@gmail.com](mailto:openforgein@gmail.com)
+
+## Disclaimer
+
+**Important**: BullXchange is a paper trading simulator created for educational purposes only. It has no connection to real trading platforms and uses virtual currency only. All trades use simulated money and real market data for educational purposes.
+
+---
+
+Built with Next.js, React, and Tailwind CSS
