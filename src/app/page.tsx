@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AreaChart, Area, ResponsiveContainer, YAxis, Tooltip } from 'recharts';
 import { 
-  Play, TrendingUp, Activity, Target, Shield, Check, Minus, Star, Download, ChevronDown, ArrowRight, Cpu, Terminal
+  Play, TrendingUp, Activity, Target, Shield, Check, Minus, Star, Download, ChevronDown, ArrowRight, Cpu, Terminal, AlertCircle, Info
 } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -30,7 +30,6 @@ const tickerItems = [
   { sym: "ITC", price: "3,810.00", change: "-0.25%", up: false },
 ];
 
-// Added image URLs to testimonials
 const testimonials = [
   { text: "BullXchange helped me understand options trading without losing my savings. The interface is incredibly professional.", author: "Rohan D.", role: "Beginner Trader", image: "https://randomuser.me/api/portraits/men/32.jpg" },
   { text: "The execution speed and live market data make it feel exactly like a real institutional broker terminal. Flawless.", author: "Anjali M.", role: "Day Trader", image: "https://randomuser.me/api/portraits/women/44.jpg" },
@@ -39,7 +38,6 @@ const testimonials = [
   { text: "As an instructor, I mandate that all my students use BullXchange before they are allowed to touch real capital.", author: "Amit R.", role: "Trading Mentor", image: "https://randomuser.me/api/portraits/men/46.jpg" },
 ];
 
-// Dummy profile images for the Hero trust badge
 const dummyAvatars = [
   "https://randomuser.me/api/portraits/men/32.jpg",
   "https://randomuser.me/api/portraits/women/44.jpg",
@@ -75,17 +73,51 @@ export default function BullXchangeLanding() {
   ];
 
   return (
-    // Global DM Sans application on the root container
     <div className="min-h-screen bg-black text-white selection:bg-emerald-500 selection:text-black overflow-hidden antialiased" style={{ fontFamily: '"DM Sans", sans-serif' }}>
+      
+      {/* GLOBAL CSS OVERRIDE TO FIX NAVBAR OVERLAP */}
+      <style dangerouslySetInnerHTML={{ __html: `
+        /* Pushes the Navbar down by the exact height of the Top Note Banner (40px) */
+        nav, header[class*="fixed"], div[class*="fixed"] > nav {
+          top: 40px !important;
+        }
+        /* Extra padding for main content so hero isn't cut off */
+        .hero-padding {
+          padding-top: 12rem !important;
+        }
+      `}} />
+
+      {/* 1. TOP NOTE BANNER (MOVING LEFT TO RIGHT) */}
+      <div className="fixed top-0 left-0 w-full h-[40px] bg-[#111] border-b border-[#333] z-[100] flex items-center overflow-hidden whitespace-nowrap">
+        <motion.div
+          className="flex items-center w-max"
+          animate={{ x: ["0%", "-50%"] }}
+          transition={{ ease: "linear", duration: 35, repeat: Infinity }}
+        >
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="flex items-center gap-3 px-8 text-[10px] sm:text-xs">
+              <span className="bg-zinc-800 text-white font-bold px-2 py-0.5 rounded text-[9px] uppercase tracking-widest shadow-sm">Note</span>
+              <span className="text-zinc-300 font-medium tracking-wide">
+                THIS APP IS CREATED ONLY FOR PAPER TRADING PURPOSE. IT HAS NO CONNECTIONS WITH REAL TRADING. IT USES REAL DATA BUT NO REAL CURRENCY IS USED. ALL TRADES USE VIRTUAL CURRENCY.
+              </span>
+              <span className="text-[#444] font-black">|</span>
+              <span className="text-zinc-400 font-medium tracking-wide flex items-center gap-1">
+                FOR SUGGESTIONS DROP THE MAIL: <a href="mailto:openforgein@gmail.com" className="text-emerald-500 font-bold hover:text-emerald-400 transition-colors">openforgein@gmail.com</a>
+              </span>
+            </div>
+          ))}
+        </motion.div>
+      </div>
+
       <Navbar />
 
       {/* TECH GRID BACKGROUND */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none z-0"></div>
 
       {/* 1. HERO SECTION */}
-      <section className="pt-40 pb-20 px-6 min-h-[85vh] flex flex-col justify-center border-b border-[#222] relative z-10">
+      <section className="hero-padding pb-20 px-6 min-h-[85vh] flex flex-col justify-center border-b border-[#222] relative z-10" data-aos="fade-up">
         <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-16 w-full">
-          <motion.div variants={staggerContainer} initial="hidden" animate="visible" className="lg:w-1/2 text-center lg:text-left z-20">
+          <motion.div variants={staggerContainer} initial="hidden" animate="visible" className="lg:w-1/2 text-center lg:text-left z-20" data-aos="fade-right">
             <motion.div variants={fadeUp} className="inline-flex items-center gap-2 mb-6 px-3 py-1.5 bg-[#111] border border-[#333] text-zinc-300 text-xs font-medium uppercase tracking-widest rounded-md shadow-lg">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Live Simulation
             </motion.div>
@@ -96,9 +128,13 @@ export default function BullXchangeLanding() {
               Practice real market trading without risking real money. Start with ₹10,00,000 in virtual capital and learn stocks + F&O in a real-time simulation environment.
             </motion.p>
             <motion.div variants={fadeUp} className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-              <button className="bg-white text-black hover:bg-zinc-200 font-semibold py-3.5 px-8 rounded-lg text-sm transition-all flex items-center justify-center gap-2 shadow-[0_0_30px_rgba(255,255,255,0.15)] hover:shadow-[0_0_30px_rgba(255,255,255,0.25)] hover:-translate-y-0.5">
+              <a
+                href="https://mega.nz/file/9r91FSjJ#VNAMug3oWtpEyrWsMZ91Qw5qAvMe_T4LUe-D5Kai1PQ"
+                target="_blank"
+                className="bg-white text-black hover:bg-zinc-200 font-semibold py-3.5 px-8 rounded-lg text-sm transition-all flex items-center justify-center gap-2 shadow-[0_0_30px_rgba(255,255,255,0.15)] hover:shadow-[0_0_30px_rgba(255,255,255,0.25)] hover:-translate-y-0.5"
+              >
                  <Download className="w-4 h-4"/> Download App
-              </button>
+              </a>
               <button className="bg-[#0a0a0a] hover:bg-[#111] border border-[#333] text-white font-semibold py-3.5 px-8 rounded-lg text-sm transition-colors flex items-center justify-center gap-2 hover:-translate-y-0.5">
                  <Play className="w-4 h-4 fill-white" /> Watch Demo
               </button>
@@ -131,7 +167,7 @@ export default function BullXchangeLanding() {
 
           </motion.div>
 
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.2 }} className="lg:w-1/2 w-full flex justify-center relative">
+          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.2 }} className="lg:w-1/2 w-full flex justify-center relative" data-aos="fade-left">
             {/* Subtle glow behind the phone */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[600px] bg-emerald-500/10 blur-[100px] rounded-full pointer-events-none"></div>
             
@@ -169,7 +205,7 @@ export default function BullXchangeLanding() {
       </section>
 
       {/* LIVE MARKET TICKER */}
-      <div className="w-full border-b border-[#222] bg-[#050505] overflow-hidden flex whitespace-nowrap relative z-10">
+      <div className="w-full border-b border-[#222] bg-[#050505] overflow-hidden flex whitespace-nowrap relative z-10 py-3" data-aos="slide-up">
         <motion.div 
           className="flex items-center"
           animate={{ x: ["0%", "-33.33%"] }}
@@ -188,26 +224,29 @@ export default function BullXchangeLanding() {
       </div>
 
       {/* SPECIAL THANKS / ANGEL ONE API SECTION */}
-      <section className="py-12 border-b border-[#222] bg-black relative z-10">
+      <section className="py-16 border-b border-[#222] bg-[#050505] relative z-10" data-aos="fade-up">
         <div className="max-w-7xl mx-auto px-6 flex flex-col items-center justify-center">
-          <p className="text-zinc-500 text-[10px] font-medium uppercase tracking-widest mb-6 text-center">Special thanks for the real-time data API</p>
+          <p className="text-zinc-400 text-[10px] font-bold uppercase tracking-widest mb-6 text-center">
+            Special thanks for the real-time data API
+          </p>
           <a 
             href="https://smartapi.angelbroking.com/" 
             target="_blank" 
             rel="noopener noreferrer"
-            className="bg-white/95 px-8 py-4 rounded-xl border border-[#333] shadow-[0_0_30px_rgba(255,255,255,0.05)] hover:shadow-[0_0_30px_rgba(255,255,255,0.1)] transition-all duration-300 group cursor-pointer block"
+            className="bg-white px-10 py-5 rounded-2xl border border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300 group cursor-pointer block transform hover:-translate-y-1"
           >
-<img 
+            <img 
               src="/smart-api-logo.png" 
               alt="Angel One Smart API" 
-              className="h-8 md:h-10 object-contain opacity-90 group-hover:opacity-100 transition-opacity duration-300" 
+              className="h-8 md:h-12 object-contain opacity-90 group-hover:opacity-100 transition-opacity duration-300" 
+              style={{ backgroundColor: 'white' }}
             />
           </a>
         </div>
       </section>
 
       {/* TERMINAL METRICS SECTION */}
-      <section className="border-b border-[#222] bg-[#050505] relative z-10">
+      <section className="border-b border-[#222] bg-[#050505] relative z-10" data-aos="fade-up">
         <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 divide-x divide-[#222] border-l border-r border-[#222]">
           {[
             { label: "Active Traders", value: "10,000+" },
@@ -224,7 +263,7 @@ export default function BullXchangeLanding() {
       </section>
 
       {/* 2. FEATURES GLIMPSE */}
-      <section className="py-32 px-6 border-b border-[#222] relative z-10 bg-black">
+      <section className="py-32 px-6 border-b border-[#222] relative z-10 bg-black" data-aos="fade-up">
         <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-16 items-center">
           <div className="lg:w-1/3">
             <h2 className="text-3xl md:text-5xl font-bold text-white mb-6 tracking-tight">Platform <br/>capabilities.</h2>
@@ -252,41 +291,46 @@ export default function BullXchangeLanding() {
         </div>
       </section>
 
-      {/* 3. HOW IT WORKS (SIMPLE VIDEO SECTION) */}
-      <section className="py-32 px-6 border-b border-[#222] relative z-10 bg-[#050505]">
-        <div className="max-w-7xl mx-auto">
+      {/* 3. COMING SOON VIDEO SECTION */}
+      <section className="py-32 px-6 border-b border-[#222] bg-[#0a0a0a]" id="video-demo" data-aos="zoom-in">
+        <div className="max-w-5xl mx-auto text-center">
+          <span className="text-emerald-500 font-bold tracking-widest text-xs uppercase mb-3 block">App Walkthrough</span>
+          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 tracking-tight">See BullXchange in Action</h2>
+          <p className="text-zinc-400 text-lg max-w-2xl mx-auto mb-16">
+            Watch how BullXchange simplifies your trading practice with our comprehensive demo video.
+          </p>
+
+          <div className="relative aspect-video bg-[#111] rounded-[2rem] border border-[#333] overflow-hidden shadow-2xl group cursor-pointer">
+            {/* Glassmorphism Play Button Overlay */}
+            <div className="absolute inset-0 flex items-center justify-center bg-black/40 group-hover:bg-black/20 transition-all duration-300 z-20">
+              <div className="w-20 h-20 md:w-28 md:h-28 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center border border-white/20 group-hover:scale-110 transition-transform duration-300 shadow-2xl">
+                <div className="w-14 h-14 md:w-20 md:h-20 bg-white rounded-full flex items-center justify-center text-black pl-1.5 shadow-lg">
+                  <Play className="w-6 h-6 md:w-8 md:h-8 fill-black" />
+                </div>
+              </div>
+            </div>
+            
+            <img
+              src="https://placehold.co/1280x720/111111/333333?text=BullXchange+App+Demo"
+              alt="Demo Video Thumbnail"
+              className="w-full h-full object-cover opacity-60 transition-transform duration-700 group-hover:scale-105"
+            />
+          </div>
           
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center gap-2 mb-4 px-4 py-1.5 bg-[#111] border border-[#333] text-zinc-400 text-xs font-semibold uppercase tracking-widest rounded-full">
-              Getting Started
-            </div>
-            <h2 className="text-4xl md:text-6xl font-bold text-white mb-6 tracking-tighter">How it works.</h2>
-            <p className="text-zinc-400 text-lg max-w-2xl mx-auto">Go from absolute beginner to confident trader in four simple steps.</p>
-          </div>
+          <p className="mt-8 text-sm text-zinc-500 font-bold flex items-center justify-center gap-2">
+            <Info className="w-4 h-4 text-emerald-500" /> Full product tour coming soon.
+          </p>
+        </div>
+      </section>
 
-          {/* SIMPLE ALWAYS-PLAYING VIDEO CONTAINER */}
-          <div className="relative w-full aspect-video md:aspect-[21/9] bg-[#0a0a0a] rounded-[2rem] border border-[#333] overflow-hidden mb-20 shadow-2xl">
-            <video 
-              autoPlay 
-              loop 
-              muted 
-              playsInline 
-              className="w-full h-full object-cover opacity-70 mix-blend-lighten grayscale contrast-125"
-              // src="/your-demo-video.mp4" <-- REPLACE WITH YOUR ACTUAL VIDEO
-            >
-              {/* Fallback placeholder video for UI demonstration */}
-              <source src="https://cdn.pixabay.com/video/2020/05/24/40061-424855217_large.mp4" type="video/mp4" />
-            </video>
-            
-            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent pointer-events-none z-10"></div>
-            
-            {/* Simple Live Badge */}
-            <div className="absolute bottom-6 left-6 z-20 flex items-center gap-3 bg-black/50 backdrop-blur-md border border-white/10 px-5 py-2.5 rounded-full">
-               <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_10px_#10B981]"></div>
-               <span className="text-white font-semibold text-xs tracking-wide">Live App Preview</span>
-            </div>
+      {/* HOW IT WORKS */}
+      <section className="py-32 px-6 border-b border-[#222] relative z-10 bg-[#050505]" data-aos="fade-up">
+        <div className="max-w-7xl mx-auto text-center">
+          <div className="inline-flex items-center gap-2 mb-4 px-4 py-1.5 bg-[#111] border border-[#333] text-zinc-400 text-xs font-semibold uppercase tracking-widest rounded-full">
+            Getting Started
           </div>
-
+          <h2 className="text-4xl md:text-6xl font-bold text-white mb-16 tracking-tighter">How it works.</h2>
+          
           {/* TRADING STEPS GRID */}
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
@@ -295,7 +339,7 @@ export default function BullXchangeLanding() {
               { step: "03", title: "Trade live markets", desc: "Buy and sell real stocks and options using live data." },
               { step: "04", title: "Track & improve", desc: "Analyze your performance, learn from mistakes, and refine your strategy." }
             ].map((s, i) => (
-              <div key={i} className="relative p-8 bg-[#0a0a0a] border border-[#222] rounded-2xl hover:bg-[#111] hover:border-[#333] transition-colors group overflow-hidden">
+              <div key={i} className="relative p-8 bg-[#0a0a0a] border border-[#222] rounded-2xl hover:bg-[#111] hover:border-[#333] transition-colors group overflow-hidden text-left">
                 <div className="text-5xl font-bold text-[#222] mb-6 tracking-tighter group-hover:text-zinc-800 transition-colors">{s.step}</div>
                 <h4 className="text-lg font-bold text-white mb-2 tracking-tight">{s.title}</h4>
                 <p className="text-zinc-400 text-sm leading-relaxed">{s.desc}</p>
@@ -303,12 +347,11 @@ export default function BullXchangeLanding() {
               </div>
             ))}
           </div>
-
         </div>
       </section>
 
       {/* 4. COMPARISON TABLE */}
-      <section className="py-32 px-6 border-b border-[#222] bg-black relative z-10">
+      <section className="py-32 px-6 border-b border-[#222] bg-black relative z-10" data-aos="fade-up">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-5xl font-bold text-white mb-4 tracking-tighter">Why BullXchange?</h2>
@@ -348,7 +391,7 @@ export default function BullXchangeLanding() {
       </section>
 
       {/* 5. MOVING TESTIMONIALS (Marquee) */}
-      <section className="py-24 overflow-hidden bg-[#050505] border-b border-[#222] relative z-10">
+      <section className="py-24 overflow-hidden bg-[#050505] border-b border-[#222] relative z-10" data-aos="fade-up">
         <div className="absolute left-0 top-0 bottom-0 w-40 bg-gradient-to-r from-[#050505] to-transparent z-10 pointer-events-none"></div>
         <div className="absolute right-0 top-0 bottom-0 w-40 bg-gradient-to-l from-[#050505] to-transparent z-10 pointer-events-none"></div>
         
@@ -395,7 +438,7 @@ export default function BullXchangeLanding() {
       </section>
 
       {/* 6. FAQ SECTION */}
-      <section className="py-32 px-6 border-b border-[#222] bg-black relative z-10">
+      <section className="py-32 px-6 border-b border-[#222] bg-black relative z-10" data-aos="fade-up">
         <div className="max-w-3xl mx-auto">
           <div className="mb-12 text-center">
             <h2 className="text-3xl font-bold text-white mb-2 tracking-tighter">Frequently Asked Questions</h2>
@@ -420,15 +463,40 @@ export default function BullXchangeLanding() {
         </div>
       </section>
 
-      {/* 7. CTA SECTION */}
-      <section className="py-32 px-6 bg-[#050505] relative z-10">
-        <div className="max-w-4xl mx-auto text-center">
-          <div className="text-zinc-500 text-[10px] font-semibold uppercase tracking-widest mb-6">Trade Risk-Free</div>
-          <h2 className="text-4xl md:text-6xl font-bold text-white mb-6 tracking-tighter">Ready to start trading?</h2>
-          <p className="text-zinc-400 text-lg mb-10 max-w-xl mx-auto">Start practicing today with ₹10,00,000 virtual capital. <br className="hidden sm:block"/> No risk. Just real learning.</p>
-          <button className="bg-white text-black font-semibold py-4 px-10 rounded-lg text-sm hover:bg-zinc-200 transition-colors inline-flex items-center gap-2 shadow-[0_0_30px_rgba(255,255,255,0.1)] hover:-translate-y-0.5">
-            <Download className="w-4 h-4" /> Download for Android
-          </button>
+      {/* 7. SCAN TO DOWNLOAD CTA */}
+      <section className="py-24 px-6 bg-[#050505] relative z-10" data-aos="fade-up">
+        <div className="max-w-5xl mx-auto relative">
+          <div className="bg-[#0a0a0a] border border-[#222] rounded-[2.5rem] p-10 md:p-16 flex flex-col md:flex-row items-center justify-between gap-12 overflow-hidden relative shadow-2xl">
+            
+            <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500 opacity-5 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/3"></div>
+            <div className="absolute bottom-0 left-0 w-48 h-48 bg-emerald-500 opacity-5 rounded-full blur-[80px] translate-y-1/3 -translate-x-1/4"></div>
+
+            <div className="flex-1 text-center md:text-left relative z-10">
+              <div className="text-emerald-500 text-[10px] font-bold uppercase tracking-widest mb-4">Trade Risk-Free</div>
+              <h2 className="text-4xl font-bold text-white mb-6 tracking-tight">Ready to start trading?</h2>
+              <p className="text-zinc-400 text-lg mb-10 max-w-xl mx-auto md:mx-0 leading-relaxed">
+                Start practicing today with ₹10,00,000 virtual capital. No risk. Just real learning and simulated execution.
+              </p>
+              <div className="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-4">
+                <a
+                  href="https://mega.nz/file/9r91FSjJ#VNAMug3oWtpEyrWsMZ91Qw5qAvMe_T4LUe-D5Kai1PQ"
+                  target="_blank"
+                  className="bg-white text-black font-bold py-4 px-8 rounded-xl text-sm hover:bg-zinc-200 transition-all flex items-center gap-2 shadow-[0_0_30px_rgba(255,255,255,0.1)] hover:-translate-y-0.5"
+                >
+                  <Download className="w-4 h-4" /> Download for Android
+                </a>
+              </div>
+            </div>
+
+            <div className="flex-shrink-0 bg-white p-5 rounded-2xl transform hover:scale-105 transition-transform duration-500 relative z-10">
+              <img 
+                src="/QR IMAGE.png" 
+                alt="Scan to Download App" 
+                className="w-40 h-40 md:w-48 md:h-48 rounded-xl object-contain border border-zinc-200"
+              />
+              <p className="text-black text-[10px] font-bold text-center mt-4 uppercase tracking-widest">Scan to Download</p>
+            </div>
+          </div>
         </div>
       </section>
 
