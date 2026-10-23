@@ -53,16 +53,17 @@ const Navbar = () => {
         >
           {/* Logo Section */}
           <div className="flex items-center gap-3">
-            <Link href="/" className="flex items-center gap-2 group cursor-pointer">
+            <Link href="/" className="flex items-center gap-2.5 group cursor-pointer">
               {/* IMAGE FIX: Uses Next Image. 'invert mix-blend-screen' magically drops the white background! */}
               <Image 
-                src="/app_icon.png" 
+                src="/logo-mark.png" 
                 alt="BullXchange" 
-                width={40} 
-                height={40} 
-                className="w-10 h-10 object-contain group-hover:scale-105 transition-transform brightness-0 invert" 
+                width={48} 
+                height={48} 
+                priority
+                className="w-9 h-9 shrink-0 object-contain group-hover:scale-105 transition-transform" 
               />
-              <span className="text-lg font-bold text-white tracking-tight" style={{ fontFamily: 'DM Sans, sans-serif' }}>BullXchange</span>
+              <span className="text-xl leading-none font-bold text-white tracking-tight" style={{ fontFamily: 'DM Sans, sans-serif' }}>BullXchange</span>
             </Link>
           </div>
 
@@ -135,15 +136,15 @@ const Navbar = () => {
               <div className="bg-black border-b border-white/10">
                 {/* Added margin-top to clear the note banner on mobile */}
                 <div className="flex items-center justify-between px-5 py-3.5 mt-10">
-                  <Link href="/" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-2 group cursor-pointer">
+                  <Link href="/" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-2.5 group cursor-pointer">
                     <Image 
-                      src="/app_icon.png" 
+                      src="/logo-mark.png" 
                       alt="BullXchange" 
-                      width={40} 
-                      height={40} 
-                      className="w-10 h-10 object-contain group-hover:scale-105 transition-transform brightness-0 invert" 
+                      width={48} 
+                      height={48} 
+                      className="w-9 h-9 shrink-0 object-contain group-hover:scale-105 transition-transform" 
                     />
-                    <span className="text-lg font-bold text-white tracking-tight" style={{ fontFamily: 'DM Sans, sans-serif' }}>BullXchange</span>
+                    <span className="text-xl leading-none font-bold text-white tracking-tight" style={{ fontFamily: 'DM Sans, sans-serif' }}>BullXchange</span>
                   </Link>
                   <button 
                     onClick={() => setIsMobileMenuOpen(false)}
